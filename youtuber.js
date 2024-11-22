@@ -37,8 +37,7 @@ app.get("/youtubers", (req, res) => {
 
 // 유튜버 개별 조회
 app.get("/youtubers/:id", (req, res) => {
-  let { id } = req.params;
-  id = parseInt(id);
+  const id = parseInt(req.params.id);
 
   if (!db.has(id)) {
     res.json({ message: "can not find youTubers data" });
@@ -56,10 +55,65 @@ app.use(express.json());
 // 새로운 유튜버 데이터 등록
 app.post("/youtubers", (req, res) => {
   const data = req.body;
-  db.set(db.size + 1, data);
+  const newId = [...db.keys()].pop() + 1;
 
-  console.log(db);
+  db.set(newId, data);
+
   res.json({
-    message: `${req.body.channelName}님 유튜버가 되신 것을 환영합니다`,
+    message: `${req.body.channelName}님 유튜버가 되신 것을 환영합니다, `,
   });
+});
+
+// 개별 유튜버 삭제
+app.delete("/youtubers/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  let message = "";
+
+  if (!db.has(id)) {
+    message = `요청하신 ${id}번 유튜버는 없는 유튜버입니다.`;
+  } else {
+    const name = db.get(id).channelName;
+
+    db.delete(id);
+
+    message = `${name}님 정상 삭제되었습니다.`;
+  }
+
+  res.json({ message });
+});
+
+// 전체 유튜버 삭제
+app.delete("/youtubers", (req, res) => {
+  let message = "";
+
+  if (db.size > 0) {
+    db.clear();
+
+    message = "유튜버 전체 데이터가 삭제되었습니다.";
+  } else {
+    message = "삭제할 유튜버가 없습니다.";
+  }
+
+  res.json({ message });
+});
+
+// 개별 유튜버 수정
+app.put("/youtubers/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const channelName = req.body.channelName;
+  let message = "";
+
+  if (channelName == undefined) {
+    message = `수정 실패했습니다.`;
+  } else if (db.has(id)) {
+    const prev = db.get(id);
+
+    db.set(id, { ...prev, channelName });
+
+    message = `${prev.channelName}님, 채널명이 ${channelName}(으)로 변경되었습니다.`;
+  } else {
+    message = `요청하는 ${id}는 없는 유튜버입니다.`;
+  }
+
+  res.json({ message });
 });
