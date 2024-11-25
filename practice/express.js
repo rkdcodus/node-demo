@@ -3,25 +3,23 @@ const app = express();
 
 app.listen(8888);
 
-app.get("/", (req, res) => {
-  res.send("Hello World!!!!");
+const animals = [
+  { id: 1, name: "bird" },
+  { id: 2, name: "lion" },
+  { id: 3, name: "dog" },
+  { id: 4, name: "cat" },
+];
+
+// 동물 전체 조회
+app.get("/animals", (req, res) => {
+  res.json(animals); // json array
 });
 
-app.get("/test/1", (req, res) => {
-  res.json({
-    title: "Node.js를 공부하자!",
-    price: 20000,
-    description: "Node.js를 배울 수 있는 책",
-  });
-});
+// 동물 개별 조회
+app.get("/animals/:id", (req, res) => {
+  const id = req.params.id;
+  const animal = animals.find((animal) => animal.id == id);
 
-app.get("/test/2", (req, res) => {
-  res.send("One!!");
-  console.log("?");
-});
-
-app.get("/test/3", (req, res) => {
-  res.json({
-    say: "안녕하세요!",
-  });
+  if (animal) res.json(animal);
+  else res.status(404).send("id 값과 일치하는 데이터가 없습니다.");
 });
