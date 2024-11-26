@@ -32,6 +32,11 @@ app
 
 app
   .route("/channels/:id")
-  .get((req, res) => {})
+  .get((req, res) => {
+    const id = +req.params.id;
+
+    if (channelsDB.has(id)) res.json(channelsDB.get(id));
+    else res.json({ message: "요청하신 id와 일치하는 채널이 없습니다." });
+  })
   .put((req, res) => {})
   .delete((req, res) => {});
