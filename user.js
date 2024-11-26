@@ -14,17 +14,23 @@ app.post("/signin", (req, res) => {
   const { userId, password } = req.body;
 
   if (userId && password) {
-    const user = [...usersDB].find(
-      (user) => user[1].userId == userId && user[1].password == password
-    );
+    let isUser = false;
+    // const user = [...usersDB].find((user) => user[1].userId == userId);
+    usersDB.forEach((user) => {
+      if (user.userId === userId && user.password === password) {
+        res.status(200).json({ message: `${user.name}님 로그인에 성공했습니다.` });
+        isUser = true;
+      } else if (user.userId === userId) {
+        res.status(403).json({ message: "비밀번호를 잘못 입력했습니다." });
+        isUser = true;
+      }
+    });
 
-    if (user) {
-      res.status(200).json({ message: `${user[1].name}님 로그인에 성공했습니다.` });
-    } else {
-      res.status(403).json({ message: "없는 회원입니다." });
-    }
-  } else {
-    res.status(400).json({ message: "잘못된 요청입니다." });
+    if (!isUser) res.status(403).json({ message: "등록되지 않은 아이디입니다." });
+  } else if (userId === "") {
+    res.status(400).json({ message: "아이디를 입력해주세요" });
+  } else if (password === "") {
+    res.status(400).json({ message: "비밀번호를 입력해주세요" });
   }
 });
 
@@ -33,10 +39,14 @@ app.post("/join", (req, res) => {
   const { userId, name, password } = req.body;
 
   if (userId && name && password) {
+    usersDB.forEach((user) => {
+      if (user.userId === userId) {
+        return res.status(409).json({ message: "이미 사용 중인 아이디입니다." });
+      }
+    });
+
     let newId = 1;
-    if (usersDB.size > 0) {
-      newId = [...usersDB.keys()].pop() + 1;
-    }
+    if (usersDB.size > 0) newId = [...usersDB.keys()].pop() + 1;
 
     usersDB.set(newId, { userId, name, password });
     res.status(201).send(`${name}님 환영합니다.`);
