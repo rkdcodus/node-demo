@@ -57,7 +57,7 @@ app
       return res.status(409).json({ message: "이전 채널명과 동일합니다." });
     }
 
-    channelsDB.set(id, { newChannelTitle });
+    channelsDB.set(id, { channelTitle: newChannelTitle });
 
     res.status(200).json({
       message: `채널명이 ${channelTitle}에서 ${newChannelTitle}(으)로 변경되었습니다.`,
