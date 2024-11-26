@@ -59,4 +59,14 @@ app
       .status(200)
       .send(`채널명이 "${channelTitle}"에서 "${newChannelTitle}"(으)로 변경되었습니다.`);
   })
-  .delete((req, res) => {});
+  .delete((req, res) => {
+    const id = +req.params.id;
+
+    if (channelsDB.has(id)) {
+      const channelTitle = channelsDB.get(id).channelTitle;
+      channelsDB.delete(id);
+      res.status(200).send(`"${channelTitle}"채널이 삭제되었습니다.`);
+    } else {
+      res.status(400).json({ message: "요청하신 id와 일치하는 채널이 없습니다." });
+    }
+  });
