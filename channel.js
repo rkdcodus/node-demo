@@ -18,16 +18,19 @@ app
     if (channelTitle) {
       let newId = 1;
       if (channelsDB.size > 0) newId = [...channelsDB.keys()].pop() + 1;
+
       channelsDB.set(newId, { channelTitle });
-      res.status(201).send(`"${channelTitle}" 채널이 생성되었습니다.`);
+
+      res.status(201).json({ message: `"${channelTitle}" 채널이 생성되었습니다.` });
     } else {
       res.status(400).json({ message: "채널명을 입력해주세요" });
     }
   })
   .get((req, res) => {
     const channels = Object.fromEntries(channelsDB);
+
     if (channelsDB.size > 0) res.status(200).json(channels);
-    else res.status(200).send("아직 생성된 채널이 없습니다.");
+    else res.status(200).json({ message: "아직 생성된 채널이 없습니다." });
   });
 
 app
@@ -55,17 +58,20 @@ app
     }
 
     channelsDB.set(id, { newChannelTitle });
-    res
-      .status(200)
-      .send(`채널명이 "${channelTitle}"에서 "${newChannelTitle}"(으)로 변경되었습니다.`);
+
+    res.status(200).json({
+      message: `채널명이 "${channelTitle}"에서 "${newChannelTitle}"(으)로 변경되었습니다.`,
+    });
   })
   .delete((req, res) => {
     const id = +req.params.id;
 
     if (channelsDB.has(id)) {
       const channelTitle = channelsDB.get(id).channelTitle;
+
       channelsDB.delete(id);
-      res.status(200).send(`"${channelTitle}"채널이 삭제되었습니다.`);
+
+      res.status(200).json({ message: `"${channelTitle}"채널이 삭제되었습니다.` });
     } else {
       res.status(400).json({ message: "요청하신 id와 일치하는 채널이 없습니다." });
     }
