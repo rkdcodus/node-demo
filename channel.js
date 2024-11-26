@@ -27,7 +27,7 @@ app
     }
   })
   .get((req, res) => {
-    const channels = Object.fromEntries(channelsDB);
+    const channels = [...channelsDB].map(([key, value]) => value);
 
     if (channelsDB.size > 0) res.status(200).json(channels);
     else res.status(200).json({ message: "아직 생성된 채널이 없습니다." });
