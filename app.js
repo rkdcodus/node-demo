@@ -1,18 +1,10 @@
 const express = require("express");
 const app = express();
-const port = 8888;
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+app.listen(8888);
 
-app.use(express.json());
+const userRouter = require("./routes/users");
+const channelRouter = require("./routes/channels");
 
-app.post("/test", (req, res) => {
-  console.log(req.body.message);
-  res.json(req.body);
-});
-
-app.listen(port, () => {
-  console.log(`app listening on port ${port}`);
-});
+app.use("/", userRouter);
+app.use("/", channelRouter);

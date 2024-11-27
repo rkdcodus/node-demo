@@ -1,16 +1,11 @@
 const express = require("express");
-const app = express();
-const port = 8888;
-
-app.listen(port, () => {
-  console.log(`✨ app listening on port ${port} ✨`);
-});
+const router = express.Router();
 
 const channelsDB = new Map();
 
-app.use(express.json());
+router.use(express.json());
 
-app
+router
   .route("/channels")
   .post((req, res) => {
     const { channelTitle } = req.body;
@@ -33,7 +28,7 @@ app
     else res.status(200).json({ message: "아직 생성된 채널이 없습니다." });
   });
 
-app
+router
   .route("/channels/:id")
   .get((req, res) => {
     const id = +req.params.id;
@@ -76,3 +71,5 @@ app
       res.status(400).json({ message: "요청하신 id와 일치하는 채널이 없습니다." });
     }
   });
+
+module.exports = router;

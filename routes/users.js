@@ -1,16 +1,11 @@
 const express = require("express");
-const app = express();
-const port = 8888;
-
-app.listen(port, () => {
-  console.log(`✨ app listening on port ${port} ✨`);
-});
+const router = express.Router();
 
 const usersDB = new Map();
 
 // 로그인
-app.use(express.json());
-app.post("/signin", (req, res) => {
+router.use(express.json());
+router.post("/signin", (req, res) => {
   const { userId, password } = req.body;
 
   if (userId && password) {
@@ -35,7 +30,7 @@ app.post("/signin", (req, res) => {
 });
 
 // 회원가입
-app.post("/join", (req, res) => {
+router.post("/join", (req, res) => {
   const { userId, name, password } = req.body;
 
   if (userId && name && password) {
@@ -56,7 +51,7 @@ app.post("/join", (req, res) => {
 });
 
 // 동일한 path 요청은 route로 합치기
-app
+router
   .route("/users/:id")
   .get((req, res) => {
     // 회원 개별 조회
@@ -81,3 +76,5 @@ app
       res.status(400).json({ message: `입력하신 id값과 일치하는 회원 정보가 없습니다.` });
     }
   });
+
+module.exports = router;
