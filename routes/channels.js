@@ -41,7 +41,7 @@ router
     const id = +req.params.id;
 
     if (channelsDB.has(id)) res.status(200).json(channelsDB.get(id));
-    else notFoundChannel();
+    else notFoundChannel(res);
   })
   .put((req, res) => {
     const id = +req.params.id;
@@ -77,7 +77,7 @@ router
     }
   });
 
-function notFoundChannel() {
+function notFoundChannel(res) {
   return res.status(404).json({ message: "채널 정보를 찾을 수 없습니다." });
 }
 
