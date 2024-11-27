@@ -7,4 +7,4 @@ const userRouter = require("./routes/users");
 const channelRouter = require("./routes/channels");
 
 app.use("/", userRouter);
-app.use("/", channelRouter);
+app.use("/channels", channelRouter);

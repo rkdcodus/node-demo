@@ -6,7 +6,7 @@ const channelsDB = new Map();
 router.use(express.json());
 
 router
-  .route("/channels")
+  .route("/")
   .post((req, res) => {
     const { channelTitle } = req.body;
 
@@ -29,7 +29,7 @@ router
   });
 
 router
-  .route("/channels/:id")
+  .route("/:id")
   .get((req, res) => {
     const id = +req.params.id;
 
