@@ -10,7 +10,7 @@ router.post("/signin", (req, res) => {
 
   if (userId && password) {
     let isUser = false;
-    // const user = [...usersDB].find((user) => user[1].userId == userId);
+
     usersDB.forEach((user) => {
       if (user.userId === userId && user.password === password) {
         res.status(200).json({ message: `${user.name}님 로그인에 성공했습니다.` });
@@ -40,10 +40,7 @@ router.post("/join", (req, res) => {
       }
     });
 
-    let newId = 1;
-    if (usersDB.size > 0) newId = [...usersDB.keys()].pop() + 1;
-
-    usersDB.set(newId, { userId, name, password });
+    usersDB.set(userId, { userId, name, password });
     res.status(201).send(`${name}님 환영합니다.`);
   } else {
     res.status(400).json({ message: "잘못된 요청입니다." });
@@ -52,25 +49,24 @@ router.post("/join", (req, res) => {
 
 // 동일한 path 요청은 route로 합치기
 router
-  .route("/users/:id")
+  .route("/users")
   .get((req, res) => {
     // 회원 개별 조회
-    const id = +req.params.id;
+    const { userId } = req.body;
 
-    if (usersDB.has(id)) {
-      const { userId, name } = usersDB.get(id);
-      res.status(200).json({ userId, name });
+    if (usersDB.has(userId)) {
+      res.status(200).json(usersDB.get(userId));
     } else {
       res.status(404).json({ message: "요청하신 id 값과 일치하는 데이터가 없습니다." });
     }
   })
   .delete((req, res) => {
     // 회원 개별 탈퇴
-    const id = +req.params.id;
+    const { userId } = req.body;
 
-    if (usersDB.has(id)) {
-      const name = usersDB.get(id).name;
-      usersDB.delete(id);
+    if (usersDB.has(userId)) {
+      const name = usersDB.get(userId).name;
+      usersDB.delete(userId);
       res.status(200).json({ message: `${name}님 정상적으로 회원 탈퇴되었습니다.` });
     } else {
       res.status(400).json({ message: `입력하신 id값과 일치하는 회원 정보가 없습니다.` });
