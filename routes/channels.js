@@ -9,11 +9,10 @@ router.use(express.json());
 function validator(req, res, next) {
   const err = validationResult(req);
 
-  if (!err.isEmpty()) {
-    return res.status(400).json(err.array());
+  if (err.isEmpty()) {
+    return next();
   }
-
-  next();
+  res.status(400).json(err.array());
 }
 
 function notFoundChannel(res) {
@@ -35,8 +34,10 @@ router
 
       conn.query(sql, values, function (err) {
         if (err) {
-          return res.status(404).json({ message: "회원 정보를 찾을 수 없습니다." });
+          console.log(err);
+          return res.status(400).end();
         }
+
         res.status(201).json({ message: `${name} 채널이 생성되었습니다.` });
       });
     }
@@ -46,6 +47,11 @@ router
     const sql = "SELECT * FROM channels WHERE user_id = ?";
 
     conn.query(sql, userId, function (err, result) {
+      if (err) {
+        console.log(err);
+        return res.status(400).end();
+      }
+
       if (result.length) {
         return res.status(200).json(result);
       }
@@ -60,6 +66,11 @@ router
     const sql = "SELECT * FROM channels WHERE id = ?";
 
     conn.query(sql, id, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).end();
+      }
+
       if (result.length) {
         return res.status(200).json(result);
       }
