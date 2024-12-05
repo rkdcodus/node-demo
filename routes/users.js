@@ -1,6 +1,10 @@
 const express = require("express");
 const conn = require("../mariadb");
-const { body, param, validationResult } = require("express-validator");
+const { body, validationResult } = require("express-validator");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -40,10 +44,25 @@ router.post(
 
       const user = result[0];
 
-      if (user && password === result[0].password) {
-        return res.status(200).json({ message: `${result[0].name}님 로그인 되었습니다.` });
+      if (user && password === user.password) {
+        const token = jwt.sign(
+          {
+            email: user.email,
+            name: user.name,
+          },
+          process.env.PRIVATE_KEY,
+          {
+            expiresIn: "30m",
+            issuer: "codus",
+          }
+        );
+
+        res.cookie("token", token, {
+          httpOnly: true,
+        });
+        return res.status(200).json({ message: `${user.name}님 로그인 되었습니다.` });
       }
-      res.status(404).json({ message: "이메일 또는 비밀번호를 잘못 입력했습니다." });
+      res.status(403).json({ message: "이메일 또는 비밀번호를 잘못 입력했습니다." });
     });
   }
 );
