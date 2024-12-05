@@ -32,7 +32,12 @@ router.post(
   (req, res) => {
     const { email, password } = req.body;
 
-    conn.query(SQL.select, email, (_, result) => {
+    conn.query(SQL.select, email, (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).end();
+      }
+
       const user = result[0];
 
       if (user && password === result[0].password) {
@@ -57,8 +62,10 @@ router.post(
 
     conn.query(SQL.insert, [email, name, password, connect], (err) => {
       if (err) {
-        return res.status(409).json({ message: "이미 사용 중인 아이디입니다." });
+        console.log(err);
+        return res.status(400).end();
       }
+
       res.status(201).send({ message: `${name}님 회원가입 되었습니다.` });
     });
   }
@@ -71,7 +78,12 @@ router
     (req, res) => {
       const { email } = req.body;
 
-      conn.query(SQL.select, email, (_, result) => {
+      conn.query(SQL.select, email, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(400).end();
+        }
+
         if (result.length) {
           return res.status(200).json(result);
         }
@@ -84,7 +96,12 @@ router
     (req, res) => {
       const { email } = req.body;
 
-      conn.query(SQL.select, email, (_, result) => {
+      conn.query(SQL.select, email, (err, result) => {
+        if (err) {
+          console.log(err);
+          return res.status(400).end();
+        }
+
         if (!result.length) {
           return conn.query(SQL.delete, email, () => {
             res.status(200).json({ message: `정상적으로 회원 탈퇴되었습니다.` });
